@@ -1,6 +1,6 @@
 <?php
 
-namespace Bordieris\MapAddress;
+namespace Bordieris\ExtendedPlace;
 
 use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;

@@ -16,13 +16,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Bordieris\\MapAddress\\": "src/"
+            "Bordieris\\ExtendedPlace\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Bordieris\\MapAddress\\FieldServiceProvider"
+                "Bordieris\\ExtendedPlace\\FieldServiceProvider"
             ]
         }
     },

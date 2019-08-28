@@ -1,10 +1,10 @@
 <?php
 
-namespace Bordieris\MapAddress;
+namespace Bordieris\ExtendedPlace;
 
 use Laravel\Nova\Fields\Field;
 
-class MapAddress extends Field
+class ExtendedPlace extends Field
 {
     /**
      * The field's component.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Naif\MapAddress;
+namespace Bordieris\MapAddress;
 
 use Laravel\Nova\Fields\Field;
 
@@ -11,7 +11,7 @@ class MapAddress extends Field
      *
      * @var string
      */
-    public $component = 'map_address';
+    public $component = 'extended_address';
 
     public function initLocation($latitude, $longitude){
         return $this->withMeta([

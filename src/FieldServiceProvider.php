@@ -1,6 +1,6 @@
 <?php
 
-namespace Naif\MapAddress;
+namespace Bordieris\MapAddress;
 
 use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;
@@ -18,14 +18,14 @@ class FieldServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/map-address.php' => base_path('config/map-address.php'),
+                __DIR__.'/../config/extended-address.php' => base_path('config/extended-address.php'),
             ], 'config');
         }
 
         Nova::serving(function (ServingNova $event) {
-            Nova::script('map_address_gmaps', $this->googleMapsSource());
-            Nova::script('map_address', __DIR__.'/../dist/js/field.js');
-            Nova::style('map_address', __DIR__.'/../dist/css/field.css');
+            Nova::script('extended_address_gmaps', $this->googleMapsSource());
+            Nova::script('extended_address', __DIR__.'/../dist/js/field.js');
+            Nova::style('extended_address', __DIR__.'/../dist/css/field.css');
         });
     }
 
@@ -36,7 +36,7 @@ class FieldServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/map-address.php', 'map-address');
+        $this->mergeConfigFrom(__DIR__.'/../config/extended-address.php', 'extended-address');
     }
 
     private function googleMapsSource()

@@ -1,5 +1,5 @@
 {
-    "name": "naif/map_address",
+    "name": "bordieris/nova_extended_place",
     "description": "A Laravel Nova field to place a marker on map to get coordinates then it reverse geocoding the coordinates to get a street address",
     "keywords": [
         "laravel",
@@ -16,13 +16,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Naif\\MapAddress\\": "src/"
+            "Bordieris\\MapAddress\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Naif\\MapAddress\\FieldServiceProvider"
+                "Bordieris\\MapAddress\\FieldServiceProvider"
             ]
         }
     },

@@ -1,4 +1,4 @@
-## Nova Map Address Field
+## Nova Extended Place Field
 
 A Nova field to place a marker on map to get coordinates then it reverse geocoding the coordinates to get a street address
 ## Installation

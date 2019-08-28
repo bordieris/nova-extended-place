@@ -6,24 +6,24 @@ A Nova field to place a marker on map to get coordinates then it reverse geocodi
 You can install the package in to a Laravel app that uses Nova via composer:
 
 ```bash
-composer require naif/map_address
+composer require bordieris/nova_extended_place
 ```
 
 ## Configuration
 Publish the package config file:
 ```bash
-php artisan vendor:publish --provider="Naif\MapAddress\FieldServiceProvider"
+php artisan vendor:publish --provider="Bordieris\ExtendedPlace\FieldServiceProvider"
 ```
 
-This is the contents of the file which will be published at [config/map-address.php](config/map-address.php).
+This is the contents of the file which will be published at [config/extended-place.php](config/extended-place.php).
 
-Add the following keys to your `.env` and `.env.example`:
+Add the following keys to your `.env`:
 
 ```
 MAP_ADDRESS_API_KEY=
 
 Optional: Set map and address language
-MAP_ADDRESS_LANGUAGE=ar
+MAP_ADDRESS_LANGUAGE=it
 ```
 
 _If you need a Google Maps API key, you can create an app and enable Places API and create credentials to get your API key https://console.developers.google.com._
@@ -33,14 +33,14 @@ Add the below to Nova/User.php resource:
 
 ```php
 
-MapAddress::make('address'),
+ExtendedPlace::make('address'),
 
 //You can set the initial map location. By default (United States)
- MapAddress::make('address')
+ ExtendedPlace::make('address')
     ->initLocation(40.730610,-98.935242),
 
 //You can also set the map zoom level. By default (4)
- MapAddress::make('address')
+ ExtendedPlace::make('address')
     ->initLocation(40.730610,-98.935242)
     ->zoom(12),
 
@@ -51,9 +51,11 @@ MapAddress::make('address'),
 ![Package screenshot](https://pbs.twimg.com/media/DlyEL0AW0AU0UQL.jpg)
 
 ## Support:
-naif@naif.io
+bordieris@artimedia.net
 
-https://www.linkedin.com/in/naif
+## Inspired by
+[naifalshaye/nova-map-address](https://github.com/naifalshaye/nova-map-address)
+
 
 ## License
 

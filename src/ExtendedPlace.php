@@ -14,34 +14,19 @@ class ExtendedPlace extends Field
      */
     public $component = 'extended_place';
 
-    private $lat;
-    private $lng;
-
-
     public function __construct($user = null) {
         parent::__construct(null, null, null);
 
-        $this->init();
-
-        return $this->execute();
+        $this->initLocation(Config::get('extended-place.default_geopoint.latitude'), Config::get('extended-place.default_geopoint.longitude'))
+            ->zoom(null);
     }
 
-    private function execute(){
-        return $this->withMeta([
-            'lat' => $this->lat,
-            'lng' => $this->lng,
-        ]);
-    }
-
-    private function init(){
-        $this->lat = Config::get('extended-place.default_geopoint.latitude');
-        $this->lng = Config::get('extended-place.default_geopoint.longitude');
-    }
 
     public function initLocation($latitude, $longitude){
-        $this->lat = $latitude;
-        $this->lng = $longitude;
-        return $this->execute();
+        return $this->withMeta([
+            'lat' => $latitude,
+            'lng' => $longitude,
+        ]);
     }
 
     public function zoom($zoom)

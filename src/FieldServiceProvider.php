@@ -44,8 +44,8 @@ class FieldServiceProvider extends ServiceProvider
         return vsprintf(
             'https://maps.googleapis.com/maps/api/js?key=%s&language=%s',
             [
-                Config::get('map-address.api_key'),
-                Config::get('map-address.language'),
+                Config::get('extended-place.api_key'),
+                Config::get('extended-place.language'),
             ]
         );
     }

@@ -14,8 +14,17 @@ class ExtendedPlace extends Field
      */
     public $component = 'extended_place';
 
-    public function __construct($user = null) {
-        parent::__construct(null, null, null);
+
+    /**
+     * Create a new field.
+     *
+     * @param  string  $name
+     * @param  string|null  $attribute
+     * @param  mixed|null  $resolveCallback
+     * @return void
+     */
+    public function __construct($name = null, $attribute = null, $resolveCallback = null) {
+        parent::__construct($name, $attribute, $resolveCallback);
 
         $this->initLocation(Config::get('extended-place.default_geopoint.latitude'), Config::get('extended-place.default_geopoint.longitude'))
             ->zoom(Config::get('extended-place.default_zoom'));

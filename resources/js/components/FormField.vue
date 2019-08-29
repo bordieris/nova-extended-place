@@ -94,6 +94,7 @@
              * Set the initial, internal value for the field.
              */
             setInitialValue() {
+                const places = require('places.js')
                 this.value = this.field.value || ''
             },
             /**

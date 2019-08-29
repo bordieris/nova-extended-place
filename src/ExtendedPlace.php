@@ -18,7 +18,7 @@ class ExtendedPlace extends Field
         parent::__construct(null, null, null);
 
         $this->initLocation(Config::get('extended-place.default_geopoint.latitude'), Config::get('extended-place.default_geopoint.longitude'))
-            ->zoom(null);
+            ->zoom(Config::get('extended-place.default_zoom'));
     }
 
 

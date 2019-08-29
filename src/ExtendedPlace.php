@@ -11,7 +11,7 @@ class ExtendedPlace extends Field
      *
      * @var string
      */
-    public $component = 'extended_address';
+    public $component = 'extended_place';
 
     public function initLocation($latitude, $longitude){
         return $this->withMeta([

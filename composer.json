@@ -1,6 +1,6 @@
 {
     "name": "bordieris/nova_extended_place",
-    "description": "A Laravel Nova field to place a marker on map to get coordinates then it reverse geocoding the coordinates to get a street address",
+    "description": "A Laravel Nova Extended Place field. Allows to discover from an address or place a marker on map to get coordinates and reverse geocoding the coordinates to get a street address",
     "keywords": [
         "laravel",
         "nova",

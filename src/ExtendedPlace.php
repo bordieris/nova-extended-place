@@ -65,6 +65,17 @@ class ExtendedPlace extends Field
     }
 
     /**
+     * Specify the field that contains the city name.
+     *
+     * @param  string  $field
+     * @return $this
+     */
+    public function cityName($field)
+    {
+        return $this->withMeta([__FUNCTION__ => $field]);
+    }
+
+    /**
      * Specify the field that contains the province.
      *
      * @param  string  $field

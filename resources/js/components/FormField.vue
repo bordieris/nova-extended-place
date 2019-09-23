@@ -1,13 +1,23 @@
 <template>
     <default-field :field="field">
         <template slot="field">
+            <input
+                    :id="'algoliaSearch_'+field.attribute"
+                    type="text"
+                    v-model="address.algoliaSearch"
+                    class="w-full form-control form-input form-input-bordered"
+                    :class="errorClasses"
+                    placeholder="Inserisci l'indirizzo da cercare"
+                    :disabled="isReadonly"
+            />
             <div class="google-map" :id="mapName"></div><br>
-            <input :id="field.name" type="text"
+            <!--input :id="field.name" type="text"
                    class="w-full form-control form-input form-input-bordered"
                    :class="errorClasses"
                    :placeholder="field.name"
                    v-model="value"
-            />
+                   disabled
+            /-->
             <p v-if="hasError" class="my-2 text-danger">
                 {{ firstError }}
             </p>
@@ -34,19 +44,26 @@
         props: ['resourceName', 'resourceId', 'field'],
         data: function () {
             return {
-                mapName: this.name + "-map"
+                mapName: this.name + "-map",
+                latitudeFieldName: this.field.latitude,
+                longitudeFieldName: this.field.longitude,
+                cityFieldName: this.field.city,
+                provinceFieldName: this.field.province,
+                address: {"algoliaSearch": ''},
+                map: null,
+                previousMarker: null
             }
         },
         mounted: function () {
-            var map;
             const element = document.getElementById(this.mapName);
-            var latitudeFieldName = this.field.latitude;
-            var longitudeFieldName = this.field.longitude;
-            var cityFieldName = this.field.city;
+            var latitudeFieldName = this.latitudeFieldName;
+            var longitudeFieldName = this.longitudeFieldName;
+            var cityFieldName = this.cityFieldName;
             var provinceFieldName = this.field.province;
-            this.address = {};
+            //this.address = {};
             if (this.value.length>0 && this.isValidJSON(this.value)){
                 this.address = JSON.parse(this.value);
+                if(!this.address.algoliaSearch) this.address.algoliaSearch = '';
             } else {
                 this.address.address = this.value;
                 let tmpLat = this.getElementValue(this.$parent, latitudeFieldName)
@@ -54,11 +71,13 @@
                 if(tmpLat && tmpLng) {
                     this.address.latlng = {"lat": tmpLat, "lng": tmpLng}
                 }
-                this.address.city = this.getElementValue(this.$parent, cityFieldName)
+                //this.address.city = this.getElementValue(this.$parent, cityFieldName)
+                this.address.city = this.field.cityName
                 this.address.province = this.getElementValue(this.$parent, provinceFieldName)
                 this.address.formatted_address = this.address.address + ' ' +this.address.city
             }
-            console.log(this.address);
+            this.address.algoliaSearch = this.address.formatted_address ? this.address.formatted_address : this.address
+
             var lat = 45.0430593;
             var lng = 9.6725524;
 
@@ -70,37 +89,36 @@
             if (this.address.latlng && this.address.latlng.lat && this.address.latlng.lng){
                 lat = this.address.latlng.lat;
                 lng = this.address.latlng.lng;
-                if (previousMarker) {
-                    previousMarker.setMap(null);
+                if (this.previousMarker) {
+                    this.previousMarker.setMap(null);
                 }
             }
             const options = {
                 zoom: this.field.zoom || 4,
                 center: new google.maps.LatLng(lat, lng)
             };
-            map = new google.maps.Map(element, options);
-            var previousMarker;
+            this.map = new google.maps.Map(element, options);
 
             var extendedPlaceField = this; //address.formatted_address ? address.formatted_address : '' ;
             extendedPlaceField.value = this.address.formatted_address ? this.address.formatted_address : '';
-            previousMarker = new google.maps.Marker({
+            extendedPlaceField.previousMarker = new google.maps.Marker({
                 position: new google.maps.LatLng(lat, lng),
-                map: map
+                map: extendedPlaceField.map
             });
-            google.maps.event.addListener(map, 'click', function(event) {
-                if (previousMarker) {
-                    previousMarker.setMap(null);
+            google.maps.event.addListener(extendedPlaceField.map, 'click', function(event) {
+                if (extendedPlaceField.previousMarker) {
+                    extendedPlaceField.previousMarker.setMap(null);
                 }
-                previousMarker = new google.maps.Marker({
+                extendedPlaceField.previousMarker = new google.maps.Marker({
                     position: event.latLng,
-                    map: map
+                    map: extendedPlaceField.map
                 });
                 var geocoder = new google.maps.Geocoder;
                 geocoder.geocode({'location': event.latLng}, function(results, status) {
                     if (status === 'OK') {
                         if (results[0]) {
                             //address = results[0].formatted_address+'|'+event.latLng.lat().toFixed(6)+','+event.latLng.lng().toFixed(6);
-                            this.address = {
+                            extendedPlaceField.address = {
                                 "formatted_address" : results[0].formatted_address,
                                 "latlng": {
                                     "lat": event.latLng.lat().toFixed(6),
@@ -113,35 +131,34 @@
                             for(let i=0; i<pieces.length;i++){
                                 let value = pieces[i]
                                 if(value.types.includes('route')){
-                                    if(this.address.address===null){
-                                        this.address.address = value.short_name
+                                    if(extendedPlaceField.address.address===null){
+                                        extendedPlaceField.address.address = value.short_name
                                     } else {
-                                        this.address.address = value.short_name + ', ' + this.address.address
+                                        extendedPlaceField.address.address = value.short_name + ', ' + extendedPlaceField.address.address
                                     }
-                                    if(this.address.address=='Unnamed Road') this.address.address = ''
+                                    if(extendedPlaceField.address.address=='Unnamed Road') extendedPlaceField.address.address = ''
                                 } else if (value.types.includes('street_number')){
-                                    if(this.address.address===null){
-                                        this.address.address = value.short_name
+                                    if(extendedPlaceField.address.address===null){
+                                        extendedPlaceField.address.address = value.short_name
                                     } else {
-                                        this.address.address =  this.address.address + ', ' + value.short_name
+                                        extendedPlaceField.address.address =  extendedPlaceField.address.address + ', ' + value.short_name
                                     }
                                 } else if (value.types.includes('administrative_area_level_2')){
-                                    this.address.province = value.short_name
+                                    extendedPlaceField.address.province = value.short_name
                                 }  else if (value.types.includes('administrative_area_level_3')){
                                     cityname.city = value.short_name
                                 }  else if (value.types.includes('locality') ){
                                     cityname.locality = value.short_name
                                 }
-                                this.address.city = cityname.locality
-                                if(null==address.city) this.address.city = cityname.city
                             }
 
-                            extendedPlaceField.value = this.address.formatted_address ? this.address.formatted_address : ''
-                            Nova.$emit(latitudeFieldName + '-value', this.address.latlng.lat)
-                            Nova.$emit(longitudeFieldName + '-value', this.address.latlng.lng)
-                            Nova.$emit(cityFieldName + '-value', this.address.city)
-                            Nova.$emit(provinceFieldName + '-value', this.address.province)
-                            extendedPlaceField.address = this.address;
+                            extendedPlaceField.address.city = cityname.locality
+                            if(null==extendedPlaceField.address.city) extendedPlaceField.address.city = cityname.city
+
+                            extendedPlaceField.value = extendedPlaceField.address.formatted_address ? extendedPlaceField.address.formatted_address : ''
+                            extendedPlaceField.address.algoliaSearch = extendedPlaceField.value
+
+                            extendedPlaceField.updateFormFields()
                         } else {
                             window.alert('No results found');
                         }
@@ -151,6 +168,8 @@
                     }
                 });
             });
+            this.initializePlaces();
+
         },
         methods: {
             /*
@@ -189,7 +208,6 @@
                 root.$children.forEach(component => {
                     if (component.field !== undefined && component.field.attribute == elemName) {
                         value = component.field.value
-                        console.log(component)
                     }
                 })
                 return value
@@ -202,6 +220,72 @@
                     }
                 })
                 return theComponent
+            },
+            /**
+             * Initialize Algolia places library.
+             */
+            initializePlaces() {
+                const places = require('places.js')
+
+                const placeType = this.field.placeType
+
+                const config = {
+                    appId: Nova.config.algoliaAppId,
+                    apiKey: Nova.config.algoliaApiKey,
+                    container: document.querySelector('#algoliaSearch_' + this.field.attribute),
+                    type: this.field.placeType ? this.field.placeType : 'address',
+                    templates: {
+                        value(suggestion) {
+                            return suggestion.name
+                        },
+                    },
+                }
+
+                const placesAutocomplete = places(config)
+
+                placesAutocomplete.on('change', e => {
+                    this.$nextTick(() => {
+                        //console.log(e.suggestion)
+                        this.address.algoliaSearch = e.suggestion.name
+                        this.address.address = e.suggestion.name
+                        this.address.formatted_address = e.suggestion.name +' '+e.suggestion.city
+                        this.address.city = e.suggestion.city
+                        this.address.latlng = e.suggestion.latlng
+                        this.address.province = e.suggestion.hit.county[1]
+
+                        this.updateFormFields()
+                    })
+                })
+
+                placesAutocomplete.on('clear', () => {
+                    this.$nextTick(() => {
+                        this.address.algoliaSearch = ''
+                        this.address.address = ''
+                        this.address.formatted_address = ''
+                        this.address.city = ''
+                        this.address.province = ''
+                        this.address.latlng = {"lat":'', "lng":''}
+
+                        this.updateFormFields()
+                    })
+                })
+            },
+            updateFormFields() {
+                //Nova.$emit('algoliaSearch'+this.field.attribute + '-value', this.address.algoliaSearch)
+                Nova.$emit(this.latitudeFieldName + '-value', this.address.latlng.lat)
+                Nova.$emit(this.longitudeFieldName + '-value', this.address.latlng.lng)
+                Nova.$emit(this.cityFieldName + '-value', this.address.city)
+                Nova.$emit(this.provinceFieldName + '-value', this.address.province)
+                var map = this.map
+                if (this.previousMarker) {
+                    this.previousMarker.setMap(null);
+                };
+                this.previousMarker = new google.maps.Marker({
+                    position: new google.maps.LatLng(this.address.latlng.lat, this.address.latlng.lng),
+                    map: map
+                });
+                map.panTo(this.previousMarker.getPosition())
+
             }
         },
     }
